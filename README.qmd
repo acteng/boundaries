@@ -1,0 +1,96 @@
+---
+title: Boundaries
+format: gfm
+---
+
+```{r include=FALSE}
+library(tidyverse)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+## Local authority districts
+
+Local authority districts are provided by https://geoportal.statistics.gov.uk/.
+They are not static
+
+```{r lads}
+layer = "Local_Authority_Districts_December_2022_Boundaries_UK_BUC"
+u = paste0(
+  "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/",
+  layer,
+  "/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
+)
+lads = sf::read_sf(u)
+plot(lads$geometry)
+```
+
+## Transport authorities
+
+Transport authorities are composed of one or more local authorities.
+
+```{r, eval=FALSE, echo=FALSE}
+u = "https://github.com/udsleeds/openinfra/raw/main/data-small/lad_ta_region_lookup_atf3.csv"
+lad_lookup = read_csv(u)
+ta_lookup = read_csv("C:/Users/RLOVELAC/atip_analysis/lookup.csv")
+summary(ta_lookup$name %in% lad_lookup$Region_name)
+for(i in seq(length(ta_lookup))) {
+  print(summary(ta_lookup[[i]] %in% lad_lookup$Region_name))
+}
+ta_in_lookup = ta_lookup$name_original %in% lad_lookup$Region_name
+ta_lookup[!ta_in_lookup, ] # South Yorkshire missing
+lad_lookup = lad_lookup %>% 
+  mutate(ATF4_region_name = case_when(
+    str_detect(Region_name, "Sheff") ~ "South Yorkshire Combined Authority",
+    TRUE ~ Region_name
+      ))
+summary(ta_lookup$name_original %in% lad_lookup$ATF4_region_name)
+ta_lookup = ta_lookup %>% 
+  transmute(
+    ATF4_region_name = name_original,
+    internal_region_name = name,
+    authority_name_alternative_1 = Authority,
+    authority_name_alternative_2 = Authority_alternative,
+    authority_name_alternative_3 = `LA name`
+    )
+lad_lookup = lad_lookup %>% 
+  transmute(
+    LAD22NM,
+    ATF4_region_name
+    )
+write_csv(lad_lookup, "lad_lookup.csv")
+write_csv(ta_lookup, "ta_lookup.csv")
+```
+
+The lookup table in `lad_lookup.csv` provides a lookup between LADs and transport authorities.
+The table has the following contents (sample of 9 authorities shown):
+
+```{r}
+lad_lookup = read_csv("lad_lookup.csv")
+lad_lookup %>% 
+  slice(1:9) %>% 
+  knitr::kable()
+```
+
+
+The lookup table was used to create a dataset representing transport authorities, as shown below.
+
+```{r transport_authorities}
+lads_joined = left_join(lads, lad_lookup)
+lads_joined = lads_joined %>% 
+  filter(!is.na(ATF4_region_name))
+sf::sf_use_s2(FALSE)
+transport_authorities = lads_joined %>% 
+  group_by(ATF4_region_name) %>% 
+  summarise(
+    n_lads = n(),
+    lad_names = paste(LAD22NM, collapse = ", ")
+  )
+plot(transport_authorities$geometry)
+sf::write_sf(transport_authorities, "transport_authorities.geojson", delete_dsn = TRUE)
+```
+
+There are `r nrow(transport_authorities)` transport authorities including London and Isles of Scilly.
+
+
+This is shown below for West Yorkshire, for example.
+
