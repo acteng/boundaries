@@ -5,8 +5,12 @@ format: gfm
 
 ```{r include=FALSE}
 library(tidyverse)
+library(tmap)
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
+
+This document provides reproducible code that generates boundary datasets and lookup tables used by Active Travel England.
+See `README.qmd` for reproducible source code.
 
 ## Local authority districts
 
@@ -40,23 +44,25 @@ for(i in seq(length(ta_lookup))) {
 ta_in_lookup = ta_lookup$name_original %in% lad_lookup$Region_name
 ta_lookup[!ta_in_lookup, ] # South Yorkshire missing
 lad_lookup = lad_lookup %>% 
-  mutate(ATF4_region_name = case_when(
+  mutate(atf4_authority_name = case_when(
     str_detect(Region_name, "Sheff") ~ "South Yorkshire Combined Authority",
     TRUE ~ Region_name
       ))
-summary(ta_lookup$name_original %in% lad_lookup$ATF4_region_name)
+summary(ta_lookup$name_original %in% lad_lookup$atf4_authority_name)
 ta_lookup = ta_lookup %>% 
   transmute(
-    ATF4_region_name = name_original,
+    atf4_authority_name = name_original,
+    atf4_authority_code = code,
     internal_region_name = name,
     authority_name_alternative_1 = Authority,
     authority_name_alternative_2 = Authority_alternative,
     authority_name_alternative_3 = `LA name`
-    )
+    ) %>% 
+  arrange(atf4_authority_name)
 lad_lookup = lad_lookup %>% 
   transmute(
     LAD22NM,
-    ATF4_region_name
+    atf4_authority_name
     )
 write_csv(lad_lookup, "lad_lookup.csv")
 write_csv(ta_lookup, "ta_lookup.csv")
@@ -78,20 +84,36 @@ The lookup table was used to create a dataset representing transport authorities
 ```{r transport_authorities}
 lads_joined = left_join(lads, lad_lookup)
 lads_joined = lads_joined %>% 
-  filter(!is.na(ATF4_region_name))
+  filter(!is.na(atf4_authority_name))
 sf::sf_use_s2(FALSE)
 transport_authorities = lads_joined %>% 
-  group_by(ATF4_region_name) %>% 
+  group_by(atf4_authority_name) %>% 
   summarise(
     n_lads = n(),
     lad_names = paste(LAD22NM, collapse = ", ")
-  )
+  ) %>% 
+  arrange(atf4_authority_name)
 plot(transport_authorities$geometry)
 sf::write_sf(transport_authorities, "transport_authorities.geojson", delete_dsn = TRUE)
 ```
 
 There are `r nrow(transport_authorities)` transport authorities including London and Isles of Scilly.
+The complete list of `atf4_authority_names` is shown below.
 
+```{r}
+ta_lookup = read_csv("ta_lookup.csv")
+ta_lookup$atf4_authority_name
+```
 
-This is shown below for West Yorkshire, for example.
+The link between local authority districts (LADs) and transport authorities is shown below for West Yorkshire, for example.
+
+```{r}
+lads_joined = left_join(lads, lad_lookup)
+lads_joined %>% 
+  filter(atf4_authority_name == "West Yorkshire Combined Authority") %>% 
+  select(LAD22NM) %>% 
+  tm_shape() +
+  tm_polygons("LAD22NM")
+```
+
 
