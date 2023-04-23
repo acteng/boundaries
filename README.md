@@ -122,3 +122,5 @@ The link between local authority districts (LADs) and transport
 authorities is shown below for West Yorkshire, for example.
 
 ![](README_files/figure-commonmark/unnamed-chunk-5-1.png)
+
+The resulting files are available in the repo’s releases.

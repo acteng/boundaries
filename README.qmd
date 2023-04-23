@@ -116,4 +116,11 @@ lads_joined %>%
   tm_polygons("LAD22NM")
 ```
 
+The resulting files are available in the repo's releases.
 
+```{bash, eval=FALSE}
+ls
+gh release create
+gh release upload 1.2 *.csv
+gh release upload 1.2 *.geojson
+```
