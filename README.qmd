@@ -56,7 +56,7 @@ ta_lookup = ta_lookup %>%
     internal_region_name = name,
     authority_name_alternative_1 = Authority,
     authority_name_alternative_2 = Authority_alternative,
-    authority_name_alternative_3 = `LA name`
+    `LA name`
     ) %>% 
   arrange(atf4_authority_name)
 lad_lookup = lad_lookup %>% 
@@ -120,7 +120,8 @@ The resulting files are available in the repo's releases.
 
 ```{bash, eval=FALSE}
 ls
+git status
 gh release create
-gh release upload 1.2 *.csv
-gh release upload 1.2 *.geojson
+gh release upload 1.3 *.csv
+gh release upload 1.3 *.geojson
 ```
