@@ -11,6 +11,8 @@ https://geoportal.statistics.gov.uk/. They are not static
 
 ![](README_files/figure-commonmark/lads-1.png)
 
+We’ll generate centroids for each LAD.
+
 ## Transport authorities
 
 Transport authorities are composed of one or more local authorities.
