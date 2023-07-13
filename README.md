@@ -7,9 +7,32 @@ datasets and lookup tables used by Active Travel England. See
 ## Local authority districts
 
 Local authority districts are provided by
-https://geoportal.statistics.gov.uk/. They are not static
+https://geoportal.statistics.gov.uk/. They are not static. The latest
+version is
+[Local_Authority_Districts_May_2023_UK_BUC](https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-may-2023-uk-buc-2/explore?location=54.540872%2C-3.405121%2C6.98).
 
 ![](README_files/figure-commonmark/lads-1.png)
+
+The first 10 rows are as follows:
+
+We can convert these into country boundaries based on the first letter
+of the code.
+
+    [1] TRUE
+
+![](README_files/figure-commonmark/lads_country-1.png)
+
+Let’s check if the local authorities in the lookup table are the same as
+those in the boundary file.
+
+``` r
+# Aim: run once code to replace the lookup
+lad_lookup = read_csv("lad_lookup.csv")
+```
+
+The results presented above show that LADs have changed substantially
+over time. We will manually update the lookup table to reflect the
+current LADs.
 
 We’ll generate centroids for each LAD.
 
@@ -21,7 +44,7 @@ The lookup table in `lad_lookup.csv` provides a lookup between LADs and
 transport authorities. The table has the following contents (sample of 9
 authorities shown):
 
-| LAD22NM               | atf4_authority_name                      |
+| LAD23NM               | atf4_authority_name                      |
 |:----------------------|:-----------------------------------------|
 | Hartlepool            | Tees Valley Combined Authority           |
 | Middlesbrough         | Tees Valley Combined Authority           |
@@ -38,8 +61,10 @@ authorities, as shown below.
 
 ![](README_files/figure-commonmark/transport_authorities-1.png)
 
-There are 80 transport authorities including London and Isles of Scilly.
+There are 81 transport authorities including London and Isles of Scilly.
 The complete list of `atf4_authority_names` is shown below.
+
+![](README_files/figure-commonmark/unnamed-chunk-5-1.png)
 
      [1] "Bedford"                                           
      [2] "Blackburn with Darwen"                             
@@ -123,6 +148,10 @@ The complete list of `atf4_authority_names` is shown below.
 The link between local authority districts (LADs) and transport
 authorities is shown below for West Yorkshire, for example.
 
-![](README_files/figure-commonmark/unnamed-chunk-5-1.png)
+![](README_files/figure-commonmark/unnamed-chunk-8-1.png)
 
 The resulting files are available in the repo’s releases.
+
+# In Python
+
+Install polars:
