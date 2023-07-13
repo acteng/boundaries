@@ -1,4 +1,4 @@
-LAD22NM,atf4_authority_name
+LAD23NM,atf4_authority_name
 Hartlepool,Tees Valley Combined Authority
 Middlesbrough,Tees Valley Combined Authority
 Redcar and Cleveland,Tees Valley Combined Authority
@@ -63,12 +63,6 @@ East Cambridgeshire,Cambridgeshire and Peterborough Combined Authority
 Fenland,Cambridgeshire and Peterborough Combined Authority
 Huntingdonshire,Cambridgeshire and Peterborough Combined Authority
 South Cambridgeshire,Cambridgeshire and Peterborough Combined Authority
-Allerdale,Cumbria
-Barrow-in-Furness,Cumbria
-Carlisle,Cumbria
-Copeland,Cumbria
-Eden,Cumbria
-South Lakeland,Cumbria
 Amber Valley,Derbyshire
 Bolsover,Derbyshire
 Chesterfield,Derbyshire
@@ -170,13 +164,6 @@ King's Lynn and West Norfolk,Norfolk
 North Norfolk,Norfolk
 Norwich,Norfolk
 South Norfolk,Norfolk
-Craven,North Yorkshire
-Hambleton,North Yorkshire
-Harrogate,North Yorkshire
-Richmondshire,North Yorkshire
-Ryedale,North Yorkshire
-Scarborough,North Yorkshire
-Selby,North Yorkshire
 Ashfield,Nottinghamshire
 Bassetlaw,Nottinghamshire
 Broxtowe,Nottinghamshire
@@ -189,9 +176,6 @@ Oxford,Oxfordshire
 South Oxfordshire,Oxfordshire
 Vale of White Horse,Oxfordshire
 West Oxfordshire,Oxfordshire
-Mendip,Somerset
-Sedgemoor,Somerset
-South Somerset,Somerset
 Cannock Chase,Staffordshire
 East Staffordshire,Staffordshire
 Lichfield,Staffordshire
@@ -238,7 +222,6 @@ East Hertfordshire,Hertfordshire
 Stevenage,Hertfordshire
 East Suffolk,Suffolk
 West Suffolk,Suffolk
-Somerset West and Taunton,Somerset
 Bolton,Greater Manchester Combined Authority
 Bury,Greater Manchester Combined Authority
 Manchester,Greater Manchester Combined Authority
@@ -308,3 +291,7 @@ Tower Hamlets,Greater London
 Waltham Forest,Greater London
 Wandsworth,Greater London
 Westminster,Greater London
+Cumberland,Cumberland
+Westmorland and Furness,Westmorland and Furness
+North Yorkshire,North Yorkshire
+Somerset,Somerset
