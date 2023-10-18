@@ -15,6 +15,29 @@ sf::sf_use_s2(FALSE)
 This document provides reproducible code that generates boundary datasets and lookup tables used by Active Travel England.
 See `README.qmd` for reproducible source code.
 
+The first input is from ATE:
+
+```{r}
+f = "~/Downloads/authority_hierarchy.csv"
+authority_hierarchy = read_csv(f)
+names(authority_hierarchy)
+```
+
+The second from ONS's geoportal:
+
+```{r}
+# lpas = sf::read_sf("https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Local_Planning_Authorities_April_2023_Boundaries_UK_BFE/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json")
+lpas = sf::read_sf("./input_data/Local_Planning_Authorities_April_2023_Boundaries_UK_BFE_-7989988540135869051.geojson")
+names(lpas)
+```
+
+Let's compare the two:
+
+```{r}
+waldo::compare(unique(authority_hierarchy$planning_authority_name), unique(lpas$LPA23NM))
+summary(authority_hierarchy$planning_authority_name %in% lpas$LPA23NM)
+```
+
 ## Local authority districts
 
 Local authority districts are provided by https://geoportal.statistics.gov.uk/.
@@ -163,15 +186,23 @@ usethis::use_git_ignore("lads_centroids.csv")
 Transport authorities are composed of one or more local authorities.
 
 ```{r, eval=FALSE, echo=FALSE}
-u = "https://github.com/udsleeds/openinfra/raw/main/data-small/lad_ta_region_lookup_atf3.csv"
-lad_lookup = read_csv(u)
-ta_lookup = read_csv("C:/Users/RLOVELAC/atip_analysis/lookup.csv")
-summary(ta_lookup$name %in% lad_lookup$Region_name)
+lad_lookup = readxl::read_excel("~/Downloads/Local authority to LTA lookup.xlsx")
+ta_lookup = read_csv("./ta_lookup.csv")
 for(i in seq(length(ta_lookup))) {
-  print(summary(ta_lookup[[i]] %in% lad_lookup$Region_name))
+  print(summary(ta_lookup[[i]] %in% lad_lookup$lta))
 }
-ta_in_lookup = ta_lookup$name_original %in% lad_lookup$Region_name
+ta_in_lookup = ta_lookup[[4]] %in% lad_lookup$lta
 ta_lookup[!ta_in_lookup, ] # South Yorkshire missing
+lad_in_ta = lad_lookup$lta %in% ta_lookup[[4]]
+unique(lad_lookup[!lad_in_ta, ]$lta) 
+
+# Updated LA lookup that matches our data:
+lad_lookup = lad_lookup |> 
+  mutate(
+    lta = case_when(
+      str_detect(lta, "Sheff") ~ "South Yorkshire Mayoral Combined Authority",
+
+
 lad_lookup = lad_lookup |>
   mutate(atf4_authority_name = case_when(
     str_detect(Region_name, "Sheff") ~ "South Yorkshire Combined Authority",
