@@ -53,9 +53,18 @@ waldo::compare(transport_authorities_2023_09[[1]], transport_authorities_2023_11
 There’s only one difference: West Midlands ITA becomes more sensibly and
 accurately West Midlands Combined Authority.
 
-Let’s check for differences in the boundaries. We’ll do this by
-calculating the area associated with each and visualising the authority
-boundaries with the largest differences.
+Let’s check for differences in the boundaries. We can do that by
+plotting the first boundary, for example:
+
+``` r
+plot(transport_authorities_2023_09[1,0], border = "grey", col = NA)
+plot(transport_authorities_2023_11[1,0], add = TRUE, border = "darkgreen", col = NA)
+```
+
+![](update_boundaries_2023-11-27_files/figure-commonmark/unnamed-chunk-5-1.png)
+
+We’ll do this by calculating the area associated with each and
+visualising the authority boundaries with the largest differences.
 
 ``` r
 transport_authorities_2023_09$area = transport_authorities_2023_09 |>
