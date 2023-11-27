@@ -4,7 +4,9 @@ This repo uses premade lookup tables to generate boundary data files
 used by Active Travel England. See the `.qmd` files for reproducible
 source code.
 
-Regenerate the boundary files using the following code:
+Regenerate the boundary files using the following code, in which ‘lad’
+stands for local authority district and ‘lta’ stands for local transport
+authority:
 
 ``` r
 lad_lookup = readr::read_csv("./local_authority_district_to_local_transport_authority_lookup.csv")
