@@ -8,7 +8,7 @@ Regenerate the boundary files using the following code:
 
 ``` r
 lad_to_lta_lookup = readr::read_csv("./local_authority_district_to_local_transport_authority_lookup.csv")
-local_authorities = sf::read_sf("https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Local_Authority_Districts_May_2023_UK_BUC_V2/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson")
+lad_geometries = sf::read_sf("https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Local_Authority_Districts_May_2023_UK_BUC_V2/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson")
 local_authorities_joined = dplyr::left_join(local_authorities, local_authority_lookup)
 ltas = local_authorities_joined |>
   dplyr::group_by(LTA23NM) |>
