@@ -7,7 +7,7 @@ source code.
 Regenerate the boundary files using the following code:
 
 ``` r
-lad_lookup = readr::read_csv("./lad_lookup.csv")
+lad_lookup = readr::read_csv("./local_authority_district_to_local_transport_authority_lookup.csv")
 ```
 
     Rows: 296 Columns: 2

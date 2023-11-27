@@ -16,7 +16,7 @@ See the `.qmd` files for reproducible source code.
 Regenerate the boundary files using the following code:
 
 ```{r}
-lad_lookup = readr::read_csv("./lad_lookup.csv")
+lad_lookup = readr::read_csv("./local_authority_district_to_local_transport_authority_lookup.csv")
 lads = sf::read_sf("https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Local_Authority_Districts_May_2023_UK_BUC_V2/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson")
 lads_joined = dplyr::left_join(lads, lad_lookup)
 ltas = lads_joined |>
