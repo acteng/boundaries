@@ -136,3 +136,24 @@ readr::write_csv(
     "../LTAs_2023_11.csv"
 )
 ```
+
+And let’s save the LAD to LTA lookup:
+
+``` r
+LAD_to_LTA_lookup = readr::read_csv(here::here("../lad-lta-lookup/data/lad_lookup.csv"))
+```
+
+    Rows: 296 Columns: 2
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: ","
+    chr (2): LAD23NM, LTA23NM
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+readr::write_csv(
+    LAD_to_LTA_lookup,
+    "../lad_lookup.csv"
+)
+```
