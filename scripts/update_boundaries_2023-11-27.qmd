@@ -1,0 +1,114 @@
+---
+format: gfm
+title: "Updating transport authority boundaries"
+---
+
+
+```{r}
+transport_authorities_2023_09 = sf::read_sf("https://raw.githubusercontent.com/acteng/boundaries/327fd512559eef37675aa1e2906d22a43b0525e3/transport_authorities.geojson")
+transport_authorities_2023_11 = sf::read_sf(here::here("../lad-lta-lookup/data/lta_2023_11.geojson"))
+```
+
+As shown below there are 81 authorities in both versions:
+
+```{r}
+nrow(transport_authorities_2023_09)
+nrow(transport_authorities_2023_11)
+```
+
+The column names of the authorities are as follows:
+
+```{r}
+names(transport_authorities_2023_09)
+names(transport_authorities_2023_11)
+```
+
+Let's check for differences in the names of the authorities:
+
+```{r}
+waldo::compare(transport_authorities_2023_09[[1]], transport_authorities_2023_11[[1]])
+```
+
+There's only one difference: West Midlands ITA becomes more sensibly and accurately West Midlands Combined Authority.
+
+Let's check for differences in the boundaries.
+We can do that by plotting the first boundary, for example:
+
+```{r}
+plot(transport_authorities_2023_09[1,0], border = "grey", col = NA)
+plot(transport_authorities_2023_11[1,0], add = TRUE, border = "darkgreen", col = NA)
+```
+
+We'll do this by calculating the area associated with each and visualising the authority boundaries with the largest differences.
+
+```{r}
+transport_authorities_2023_09$area = transport_authorities_2023_09 |>
+  sf::st_transform(27700) |>
+  sf::st_area()
+transport_authorities_2023_11$area = transport_authorities_2023_11 |>
+  sf::st_transform(27700) |>
+  sf::st_area()
+```
+
+```{r}
+transport_authority_areas = tibble::tibble(
+  name = transport_authorities_2023_09[[1]],
+  area_2023_09 = transport_authorities_2023_09$area,
+  area_2023_11 = transport_authorities_2023_11$area,
+  area_difference = transport_authorities_2023_11$area - transport_authorities_2023_09$area,
+  difference_percent = (transport_authorities_2023_11$area - transport_authorities_2023_09$area) / transport_authorities_2023_09$area * 100
+) |>
+  dplyr::arrange(desc(difference_percent))
+transport_authority_areas
+```
+
+Remove the area columns:
+
+```{r}
+transport_authorities_2023_09$area = NULL
+transport_authorities_2023_11$area = NULL
+```
+
+
+We'll give both datasets the same column names:
+
+```{r}
+transport_authorities_updated = transport_authorities_2023_11 |>
+  # Calculate number of LADs based on data in this format from LAD23NM: "Bedford, Blackburn":
+  dplyr::mutate(n_lads = stringr::str_count(LAD23NM, ",") + 1) |>
+  # as.integer:
+  dplyr::mutate(n_lads = as.integer(n_lads)) |>
+  dplyr::transmute(atf4_authority_name = LTA23NM, n_lads, lad_names = LAD23NM)
+names(transport_authorities_2023_09) == names(transport_authorities_updated)
+```
+
+Let's compare the LAD names:
+
+```{r}
+waldo::compare(transport_authorities_2023_09$lad_names, transport_authorities_updated$lad_names)
+```
+
+Let's save the output as a GeoJSON file:
+
+```{r}
+sf::write_sf(transport_authorities_updated, "../transport_authorities.geojson", delete_dsn = TRUE)
+```
+
+And let's save a CSV file:
+
+```{r}
+readr::write_csv(
+    sf::st_drop_geometry(transport_authorities_2023_11),
+    "../LTAs_2023_11.csv"
+)
+```
+
+And let's save the LAD to LTA lookup:
+
+```{r}
+LAD_to_LTA_lookup = readr::read_csv(here::here("../lad-lta-lookup/data/lad_lookup.csv"))
+readr::write_csv(
+    LAD_to_LTA_lookup,
+    "../lad_lookup.csv"
+)
+```
